@@ -2,8 +2,8 @@ const connection = require('../db');
 
 const getAll = () => connection.execute(`
   SELECT
-    sale_id,
-    product_id,
+    sale_id AS saleId,
+    product_id AS productId,
     quantity,
     date
   FROM StoreManager.sales_products sp
@@ -13,8 +13,7 @@ const getAll = () => connection.execute(`
 
 const getById = (id) => connection.execute(`
   SELECT
-    sale_id,
-    product_id,
+    product_id AS productId,
     quantity,
     date
   FROM StoreManager.sales_products sp
