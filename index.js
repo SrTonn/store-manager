@@ -6,6 +6,7 @@ const middlewares = require('./middlewares');
 
 app.use(middlewares.error);
 app.use('/products', require('./routes/products'));
+app.use('/sales', require('./routes/sales'));
 
 app.listen(process.env.PORT, () => {
   console.log(`Escutando na porta ${process.env.PORT}`);
