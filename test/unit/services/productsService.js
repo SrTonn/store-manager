@@ -245,3 +245,28 @@ describe("quando é atualizado com sucesso", async () => {
     expect(response).to.be.a("number");
   });
 });
+
+describe("quando é removido com sucesso", async () => {
+  const ID_EXAMPLE = 1;
+  const mock = [{
+    id: 1,
+    name: "Martelo de Thor",
+    quantity: 10
+  }];
+
+  before(() => {
+    sinon.stub(ProductsModel, "getById").resolves([mock]);
+    sinon.stub(ProductsModel, "remove").resolves();
+  });
+
+  after(() => {
+    ProductsModel.getById.restore();
+    ProductsModel.remove.restore();
+  });
+
+  it("Verifica se retorna 'undefined", async () => {
+    const response = await ProductsService.remove(ID_EXAMPLE);
+
+    expect(response).to.be.undefined;
+  });
+});
