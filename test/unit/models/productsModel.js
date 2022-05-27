@@ -126,3 +126,22 @@ describe("Atualiza um produto no BD", () => {
   });
 });
 
+describe("Remove um produto no BD", () => {
+  const payloadProduct = {
+    id: 1,
+  };
+
+  before(() => {
+    sinon.stub(connection, "execute").resolves([]);
+  });
+
+  after(() => {
+    connection.execute.restore();
+  });
+
+  it("Verifica se retorna 'undefined'", () => {
+    const response = ProductsModel.remove(payloadProduct);
+
+    expect(response).to.be.undefined
+  });
+});
