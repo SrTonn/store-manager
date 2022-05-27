@@ -213,3 +213,35 @@ describe("Insere um novo produto no BD", () => {
     });
   });
 });
+
+describe("quando é atualizado com sucesso", async () => {
+  const payloadProduct = {
+    id: 1,
+    name: "Funko Pop! Overwatch - Wrecking Ball 6",
+    quantity: 15
+  };
+
+  const mock = [{
+    id: 1,
+    name: "Martelo de Thor",
+    quantity: 10
+  }];
+
+  before(() => {
+    const ID_EXAMPLE = 1;
+
+    sinon.stub(ProductsModel, "getById").resolves([mock]);
+    sinon.stub(ProductsModel, "update").resolves(ID_EXAMPLE);
+  });
+
+  after(() => {
+    ProductsModel.getById.restore();
+    ProductsModel.update.restore();
+  });
+
+  it("Verifica se retorna um numero", async () => {
+    const response = await ProductsService.update(payloadProduct);
+
+    expect(response).to.be.a("number");
+  });
+});
