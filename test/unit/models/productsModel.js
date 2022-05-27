@@ -101,3 +101,28 @@ describe('quando existem filmes criados', () => {
     expect(item).to.be.an('object');
   });
 });
+
+describe("Atualiza um produto no BD", () => {
+  const payloadProduct = {
+    id: 1,
+    name: "Funko Pop! Overwatch - Wrecking Ball 6",
+    quantity: 15
+  };
+
+  before(() => {
+    const execute = [{ affectedRows: 1 }];
+
+    sinon.stub(connection, "execute").resolves(execute);
+  });
+
+  after(() => {
+    connection.execute.restore();
+  });
+
+  it("Verifica se retorna um numero", async () => {
+    const response = await ProductsModel.update(payloadProduct);
+
+    expect(response).to.be.a("number");
+  });
+});
+
