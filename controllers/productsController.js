@@ -6,4 +6,16 @@ const getProducts = async (req, res) => {
   res.status(200).json(row);
 };
 
-module.exports = { getProducts };
+const createProducts = async (req, res) => {
+  const { name, quantity } = req.body;
+  const { id } = await ProductsService.create({ name, quantity });
+
+  const response = { id, name, quantity };
+
+  res.status(201).json(response);
+};
+
+module.exports = {
+  getProducts,
+  createProducts,
+};
