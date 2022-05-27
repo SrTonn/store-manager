@@ -40,3 +40,36 @@ describe('Ao chamar o controller de getProducts', () => {
   });
 });
 
+describe('quando é inserido com sucesso', async () => {
+  const response = {};
+  const request = {};
+  const body = {
+    name: "Funko Pop! Overwatch - Wrecking Ball 6",
+    quantity: 15
+  };
+
+  before(() => {
+    request.body = body
+    body.id = 1
+    response.status = sinon.stub().returns(response);
+    response.json = sinon.stub().returns({});
+
+    sinon.stub(ProductsService, "create").resolves(body);
+  });
+
+  after(() => {
+    ProductsService.create.restore();
+  });
+
+  it('Verifica se é chamado o status com o código 201', async () => {
+    await ProductsController.createProducts(request, response);
+
+    expect(response.status.calledWith(201)).to.be.equal(true);
+  });
+
+  it('Verifica se é chamado o json com a resposta do produto enviado', async () => {
+    await ProductsController.createProducts(request, response);
+
+    expect(response.json.calledWith(sinon.match.object)).to.be.equal(true);
+  });
+});
