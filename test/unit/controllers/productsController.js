@@ -73,3 +73,38 @@ describe('quando é inserido com sucesso', async () => {
     expect(response.json.calledWith(sinon.match.object)).to.be.equal(true);
   });
 });
+
+describe('quando é atualizado com sucesso', async () => {
+  const response = {};
+  const request = { params: { id: 1} };
+  const body = {
+    name: "Funko Pop! Overwatch - Wrecking Ball 6",
+    quantity: 15
+  };
+
+  before(() => {
+    request.body = body
+    body.id = 1
+    response.status = sinon.stub().returns(response);
+    response.json = sinon.stub().returns(body);
+
+    sinon.stub(ProductsService, "update").resolves(body);
+  });
+
+  after(() => {
+    ProductsService.update.restore();
+  });
+
+  it('Verifica se é chamado o status com o código 200', async () => {
+    await ProductsController.updateProducts(request, response);
+
+    expect(response.status.calledWith(200)).to.be.equal(true);
+  });
+
+  it('Verifica se a resposta é o objeto esperado', async () => {
+    await ProductsController.updateProducts(request, response);
+    body.id = 1;
+    expect(response.json()).to.deep.equal(body);
+  });
+});
+
