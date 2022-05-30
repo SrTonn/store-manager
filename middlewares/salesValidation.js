@@ -1,6 +1,7 @@
 const schemaSales = require('../joi/schemaSales');
 
 const validateSalesMiddleware = (req, res, next) => {
+  let hasError;
   req.body.forEach((element) => {
     const { error } = schemaSales.validate(element);
     if (error) {
@@ -12,10 +13,11 @@ const validateSalesMiddleware = (req, res, next) => {
         'number.min': 422,
       };
 
-      return res.status(statusCode[type]).json({ message });
+      hasError = true;
+      res.status(statusCode[type]).json({ message });
     }
   });
-  next();
+  if (!hasError) next();
 };
 
 module.exports = validateSalesMiddleware;
