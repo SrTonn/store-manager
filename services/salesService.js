@@ -38,8 +38,15 @@ const update = async (id, productId, quantity) => {
   };
 };
 
+const remove = async (id) => {
+  await getSales(id);
+
+  salesModel.removeSale(id);
+};
+
 module.exports = {
   getSales,
   create,
   update,
+  remove,
 };
