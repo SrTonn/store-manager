@@ -11,6 +11,23 @@ const getSales = async (id = null) => {
   return salesModel.getAll();
 };
 
+const create = async (salesProducts) => {
+  const id = await salesModel.addSale();
+
+  const insertedSalesProductsPromise = [];
+  salesProducts.map(({ productId, quantity }) => insertedSalesProductsPromise.push(
+    salesModel.addSalesProducts(id, productId, quantity),
+  ));
+
+  const insertedSalesProducts = await Promise.all(insertedSalesProductsPromise);
+
+  return {
+    id,
+    itemsSold: insertedSalesProducts,
+  };
+};
+
 module.exports = {
   getSales,
+  create,
 };

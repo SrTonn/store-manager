@@ -7,4 +7,13 @@ const getSales = async (req, res) => {
   res.status(200).json(response);
 };
 
-module.exports = { getSales };
+const createSales = async (req, res) => {
+  const response = await salesService.create(req.body);
+
+  res.status(201).json(response);
+};
+
+module.exports = {
+  getSales,
+  createSales,
+};
