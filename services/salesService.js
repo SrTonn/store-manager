@@ -39,10 +39,8 @@ const create = async (salesProducts) => {
 
   const id = await salesModel.addSale();
 
-  const insertedSalesProductsPromise = [];
-  salesProducts.map(({ productId, quantity }) => insertedSalesProductsPromise.push(
-    salesModel.addSalesProducts(id, productId, quantity),
-  ));
+  const insertedSalesProductsPromise = salesProducts
+    .map(({ productId, quantity }) => salesModel.addSalesProducts(id, productId, quantity));
 
   const insertedSalesProducts = await Promise.all(insertedSalesProductsPromise);
 
