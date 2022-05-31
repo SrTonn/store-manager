@@ -1,6 +1,8 @@
 const salesModel = require('../models/salesModel');
+const ProductsModel = require('../models/productsModel');
 
 const error404 = { status: 404, message: 'Sale not found' };
+const error422 = { status: 422, message: 'Such amount is not permitted to sell' };
 
 const getSales = async (id = null) => {
   if (id) {
@@ -11,7 +13,19 @@ const getSales = async (id = null) => {
   return salesModel.getAll();
 };
 
+const checkProductQuantity = async (salesProducts) => {
+  const hasProductQuantityPromise = salesProducts.map(async ({ productId, quantity }) => {
+    const [products] = await ProductsModel.getById(productId);
+
+    return products[0].quantity <= quantity;
+  });
+  const hasProductQuantity = await Promise.all(hasProductQuantityPromise);
+  if (hasProductQuantity.includes(true)) throw error422;
+};
+
 const create = async (salesProducts) => {
+  await checkProductQuantity(salesProducts);
+
   const id = await salesModel.addSale();
 
   const insertedSalesProductsPromise = [];
