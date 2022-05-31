@@ -23,6 +23,17 @@ const checkProductQuantity = async (salesProducts) => {
   if (hasProductQuantity.includes(true)) throw error422;
 };
 
+const updateProductQuantity = (salesProducts, restoreStock) => {
+  salesProducts.map(async ({ productId, quantity }) => {
+    const [product] = await ProductsModel.getById(productId);
+    ProductsModel.update({
+      id: productId,
+      name: product[0].name,
+      quantity: restoreStock ? product[0].quantity + quantity : product[0].quantity - quantity,
+    });
+  });
+};
+
 const create = async (salesProducts) => {
   await checkProductQuantity(salesProducts);
 
@@ -34,6 +45,8 @@ const create = async (salesProducts) => {
   ));
 
   const insertedSalesProducts = await Promise.all(insertedSalesProductsPromise);
+
+  updateProductQuantity(salesProducts);
 
   return {
     id,
@@ -53,7 +66,13 @@ const update = async (id, productId, quantity) => {
 };
 
 const remove = async (id) => {
-  await getSales(id);
+  const [sales] = await getSales(id);
+
+  updateProductQuantity([{
+    id,
+    productId: sales[0].productId,
+    quantity: sales[0].quantity,
+  }], true);
 
   salesModel.removeSale(id);
 };
