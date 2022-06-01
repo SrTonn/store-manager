@@ -1,6 +1,7 @@
 const sinon = require("sinon");
 const {expect} = require("chai")
 
+const ProductsModel = require("../../../models/productsModel");
 const SalesModel = require("../../../models/salesModel");
 const SalesService = require("../../../services/salesService");
 
@@ -109,5 +110,87 @@ describe ('Busca uma venda por ID no BD', () => {
       expect(response).to.deep.equal(mock);
     });
 
+  });
+});
+
+describe("Insere uma nova venda no BD", () => {
+  describe("quando é inserido sem sucesso", async () => {
+    const payloadSales = [{
+      productId: 1,
+      quantity: 99
+    }];
+
+    const mock = [{
+      id: 1,
+      name: "Martelo de Thor",
+      quantity: 10
+    }];
+
+    before(() => {
+      const ID_EXAMPLE = 1;
+      const insertedSalesProducts = 1;
+
+      sinon.stub(ProductsModel, "getById").resolves([mock]);
+      sinon.stub(SalesModel, "addSale").resolves({
+        id: ID_EXAMPLE,
+        itemsSold: insertedSalesProducts,
+      });
+    });
+
+    after(() => {
+      ProductsModel.getById.restore();
+      SalesModel.addSale.restore();
+    });
+
+    it("Verifica se retorna a mensagem \"Such amount is not permitted to sell\"", async () => {
+      try {
+        await SalesService.create(payloadSales);
+      } catch (error) {
+        expect(error).to.deep.equal({ status: 422, message: "Such amount is not permitted to sell" });
+      }
+    });
+  });
+
+  describe("quando é inserido com sucesso", async () => {
+    const payloadSales = [{
+      productId: 1,
+      quantity: 9
+    }];
+
+    const mock = [{
+      id: 1,
+      name: "Martelo de Thor",
+      quantity: 10
+    }];
+
+    before(() => {
+      const ID_EXAMPLE = 1;
+      const insertedSalesProducts = 1;
+
+      sinon.stub(ProductsModel, "getById").resolves([mock]);
+      sinon.stub(SalesModel, "addSalesProducts").resolves(payloadSales[0]);
+      sinon.stub(SalesModel, "addSale").resolves({
+        id: ID_EXAMPLE,
+        itemsSold: insertedSalesProducts,
+      });
+    });
+
+    after(() => {
+      ProductsModel.getById.restore();
+      SalesModel.addSale.restore();
+      SalesModel.addSalesProducts.restore();
+    });
+
+    it("Verifica se retorna um objeto", async () => {
+      const response = await SalesService.create(payloadSales);
+
+      expect(response).to.be.an("object");
+    });
+
+    it("Verifica se retorna um objeto com as chaves \"id\" e \"itemsSold\"", async () => {
+      const response = await SalesService.create(payloadSales);
+
+      expect(response).to.have.all.keys("id", "itemsSold");
+    });
   });
 });
