@@ -40,3 +40,34 @@ describe("Remove uma venda no BD", () => {
     expect(response).to.be.undefined;
   });
 });
+
+describe("insere uma nova venda no BD", () => {
+  const ID_EXAMPLE = 1;
+  const productId = 1;
+  const quantity = 15;
+
+  before(() => {
+    const execute = [{ insertId: 1 }];
+
+    sinon.stub(connection, "execute").resolves(execute);
+  });
+
+  after(() => {
+    connection.execute.restore();
+  });
+
+  describe("quando é inserido com sucesso", async () => {
+    it("Verifica se retorna um numero", async () => {
+      const response = await SalesModel.addSale();
+
+      expect(response).to.be.an("number");
+    });
+
+    it("Verifica se o objeto retornado possui as chaves \"id\" e \"quantity\" ", async () => {
+      const response = await SalesModel.addSalesProducts(ID_EXAMPLE, productId, quantity);
+
+      expect(response).to.have.all.keys("productId", "quantity");
+    });
+  });
+});
+
