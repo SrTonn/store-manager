@@ -194,3 +194,48 @@ describe("Insere uma nova venda no BD", () => {
     });
   });
 });
+
+describe("quando atualiza uma venda no BD", () => {
+  describe("quando existe o produto", async () => {
+    const ID_SALE_EXAMPLE = 1
+    const payload = {
+      productId: 1,
+      quantity: 5
+    }
+
+    const expectResponse = {
+      saleId: ID_SALE_EXAMPLE,
+      itemUpdated: [{ ...payload }]
+    };
+
+    const mock = [
+      {
+        productId: 1,
+        quantity: 5,
+        date: "2022-05-31T18:58:46.000Z"
+      },
+      {
+        productId: 2,
+        quantity: 10,
+        date: "2022-05-31T18:58:46.000Z"
+      }
+    ];
+
+    before(() => {
+      sinon.stub(SalesModel, "getById").resolves([mock]);
+      sinon.stub(SalesModel, "updateSale").resolves();
+    });
+
+    after(() => {
+      SalesModel.getById.restore();
+      SalesModel.updateSale.restore();
+    });
+
+    it("Verifica se é um objeto no padrão esperado", async () => {
+      const response = await SalesService
+        .update(ID_SALE_EXAMPLE, payload.productId, payload.quantity);
+
+      expect(response).to.deep.equal(expectResponse);
+    });
+  });
+});
