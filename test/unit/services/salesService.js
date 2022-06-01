@@ -239,3 +239,68 @@ describe("quando atualiza uma venda no BD", () => {
     });
   });
 });
+
+describe("quando remove uma venda no BD", () => {
+  describe("quando o ID está incorreto", async () => {
+    const ID_EXAMPLE = 99;
+
+    before(() => {
+      sinon.stub(SalesModel, "getById").resolves([[]]);
+      sinon.stub(SalesModel, "removeSale").resolves();
+    });
+
+    after(() => {
+      SalesModel.getById.restore();
+      SalesModel.removeSale.restore();
+    });
+
+    it("Verifica se lança o erro \"404\" com a mensagem \"Sale not found\"", async () => {
+      try {
+        await SalesService.remove(ID_EXAMPLE);
+      } catch (error) {
+        expect(error).to.deep.equal({ status: 404, message: "Sale not found" })
+      }
+    });
+  });
+
+  describe("quando o ID está correto", async () => {
+    const ID_EXAMPLE = 1;
+
+    const mockGetByIdSalesModel = [
+      {
+        productId: 1,
+        quantity: 5,
+        date: "2022-05-31T18:58:46.000Z"
+      },
+      {
+        productId: 2,
+        quantity: 10,
+        date: "2022-05-31T18:58:46.000Z"
+      }
+    ];
+
+    const mockGetByIdProductsModel = [{
+      id: 1,
+      name: "Martelo de Thor",
+      quantity: 15
+    }];
+
+    before(() => {
+      sinon.stub(SalesModel, "getById").resolves([mockGetByIdSalesModel]);
+      sinon.stub(SalesModel, "removeSale").resolves();
+      sinon.stub(ProductsModel, "getById").resolves(mockGetByIdProductsModel);
+    });
+
+    after(() => {
+      SalesModel.getById.restore();
+      SalesModel.removeSale.restore();
+      ProductsModel.getById.restore();
+    });
+
+    it("Verifica se o retorno é undefined", async () => {
+      const response = await SalesService.remove(ID_EXAMPLE);
+
+      expect(response).to.be.undefined;
+    });
+  });
+});
