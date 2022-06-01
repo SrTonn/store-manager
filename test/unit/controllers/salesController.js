@@ -40,3 +40,39 @@ describe('Ao chamar o controller de getSales', () => {
   });
 });
 
+describe("quando é inserido com sucesso", async () => {
+  const response = {};
+  const request = {};
+  const body = [{
+    productId: 1,
+    quantity: 5
+  }];
+
+  before(() => {
+    request.body = body
+
+    response.status = sinon.stub().returns(response);
+    response.json = sinon.stub().returns(body);
+
+    sinon.stub(SalesService, "create").resolves({
+      itemsSold: body
+    });
+  });
+
+  after(() => {
+    SalesService.create.restore();
+  });
+
+  it("Verifica se é chamado o status com o código 201", async () => {
+    await SalesController.createSales(request, response);
+
+    expect(response.status.calledWith(201)).to.be.equal(true);
+  });
+
+  it("Verifica se é chamado o json com a resposta do produto enviado", async () => {
+    await SalesController.createSales(request, response);
+
+    expect(response.json.calledWith(sinon.match.object)).to.be.equal(true);
+  });
+});
+
