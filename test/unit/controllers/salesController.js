@@ -113,3 +113,24 @@ describe("quando é atualizado com sucesso", async () => {
   });
 });
 
+describe("quando é removido com sucesso", async () => {
+  const response = {};
+  const request = { params: { id: 1} };
+
+  before(() => {
+    response.status = sinon.stub().returns(response);
+    response.end = sinon.stub().returns();
+
+    sinon.stub(SalesService, "remove").resolves();
+  });
+
+  after(() => {
+    SalesService.remove.restore();
+  });
+
+  it("Verifica se é chamado o status com o código 204", async () => {
+    await SalesController.deleteSales(request, response);
+
+    expect(response.status.calledWith(204)).to.be.equal(true);
+  });
+});
