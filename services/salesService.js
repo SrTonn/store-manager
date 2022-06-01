@@ -26,10 +26,12 @@ const checkProductQuantity = async (salesProducts) => {
 const updateProductQuantity = (salesProducts, restoreStock) => {
   salesProducts.map(async ({ productId, quantity }) => {
     const [product] = await ProductsModel.getById(productId);
+    const newQuantity = restoreStock
+      ? product[0].quantity + quantity : product[0].quantity - quantity;
     ProductsModel.update({
       id: productId,
       name: product[0].name,
-      quantity: restoreStock ? product[0].quantity + quantity : product[0].quantity - quantity,
+      quantity: newQuantity,
     });
   });
 };
