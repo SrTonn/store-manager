@@ -76,3 +76,40 @@ describe("quando é inserido com sucesso", async () => {
   });
 });
 
+describe("quando é atualizado com sucesso", async () => {
+  const response = {};
+  const request = { params: { id: 1} };
+  const body = [{
+    productId: 1,
+    quantity: 5
+  }];
+
+  before(() => {
+    request.body = body;
+    body.id = 1;
+
+    response.status = sinon.stub().returns(response);
+    response.json = sinon.stub().returns(body);
+
+    sinon.stub(SalesService, "update").resolves({
+      itemUpdated: body,
+    });
+  });
+
+  after(() => {
+    SalesService.update.restore();
+  });
+
+  it("Verifica se é chamado o status com o código 200", async () => {
+    await SalesController.updateSales(request, response);
+
+    expect(response.status.calledWith(200)).to.be.equal(true);
+  });
+
+  it("Verifica se a resposta é o objeto esperado", async () => {
+    await SalesController.updateSales(request, response);
+    body.id = 1;
+    expect(response.json()).to.deep.equal(body);
+  });
+});
+
